@@ -49,24 +49,42 @@ body[data-theme="light"] {
     transition: background 0.3s var(--smooth-easing), border-color 0.3s var(--smooth-easing);
 }
 
-body {
-    background-color: #010204; color: var(--main-light-text);
-    min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden;
+html {
+    height: 100%;
+    /* Prevent any accidental horizontal scroll/rubber-banding on mobile browsers */
+    overflow-x: hidden;
 }
 
-/* --- Device Chassis Shell Frame --- */
-.device-shell {
-    width: 390px; height: 844px; background: #000;
-    border: 11px solid #141b2b; border-radius: 44px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.85); overflow: hidden; position: relative;
+body {
+    background-color: #010204; color: var(--main-light-text);
+    min-height: 100dvh; display: flex; justify-content: center; align-items: center;
+    overflow-x: hidden;
 }
-@media (max-width: 450px) {
-    .device-shell { width: 100%; height: 100vh; border: none; border-radius: 0; }
+
+/* --- Device Chassis Shell Frame ---
+   Fluid by default (phones/tablets render edge-to-edge, no chrome frame).
+   The decorative phone frame is reserved for genuine desktop viewports;
+   dvh is used instead of vh so mobile browser toolbars don't clip content. */
+.device-shell {
+    width: 100%; max-width: 430px;
+    height: 100dvh; max-height: 100dvh;
+    background: #000;
+    border: none; border-radius: 0;
+    box-shadow: none; overflow: hidden; position: relative;
+}
+@media (min-width: 901px) and (min-height: 700px) {
+    .device-shell {
+        width: 390px; height: 844px; max-height: 844px;
+        border: 11px solid #141b2b; border-radius: 44px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+    }
 }
 
 .viewport {
     width: 100%; height: 100%; background: var(--app-dark-bg);
     display: flex; flex-direction: column; position: relative; overflow: hidden;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
 
 /* --- Navigation Routing Engine --- */
@@ -174,14 +192,18 @@ body[data-theme="light"] .ripple-wave { background: rgba(0, 0, 0, 0.08); }
 
 .icon-btn {
     background: rgba(255, 255, 255, 0.04); border: 1px solid var(--glass-edge);
-    color: var(--main-light-text); width: 40px; height: 40px; border-radius: 12px;
+    color: var(--main-light-text); width: 44px; height: 44px; border-radius: 12px;
     display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;
 }
 body[data-theme="light"] .icon-btn { background: rgba(0,0,0,0.03); }
 .icon-btn:active { transform: scale(0.94); }
 
 /* --- App Header Channels --- */
-.app-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 10px 16px; min-height: 68px; z-index: 10; }
+.app-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: calc(16px + env(safe-area-inset-top)) 16px 10px 16px;
+    min-height: 68px; z-index: 10;
+}
 .brand h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.4px; color: var(--main-light-text); }
 .brand.center-brand { text-align: left; flex: 1; margin-left: 14px; }
 .ai-glow { background: linear-gradient(90deg, #6366f1, #d946ef); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -202,7 +224,7 @@ body[data-theme="light"] .location-trigger { background: #fff; }
 .chevron-arrow, .pin-icon { color: var(--sub-muted-text); width: 15px; }
 .geo-action-btn {
     background: linear-gradient(135deg, #4c1d95, #1e3a8a); border: none;
-    color: #fff; width: 40px; height: 40px; border-radius: 50%;
+    color: #fff; width: 44px; height: 44px; border-radius: 50%;
     display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;
 }
 
@@ -217,13 +239,14 @@ body[data-theme="light"] .location-trigger { background: #fff; }
 }
 .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #94a3b8; }
 .sync-badge { display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 12px; color: #fff; position: relative; overflow: hidden; }
-.weather-hero-block { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
-.main-temperature { font-size: 4.2rem; font-weight: 200; line-height: 1; letter-spacing: -1px; color: #fff; }
+.weather-hero-block { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; gap: 8px; }
+.weather-metrics { min-width: 0; }
+.main-temperature { font-size: clamp(3rem, 16vw, 4.2rem); font-weight: 200; line-height: 1; letter-spacing: -1px; color: #fff; }
 .weather-condition { font-size: 1rem; font-weight: 600; color: #fff; }
 .feels-like-text { font-size: 0.8rem; color: #cbd5e1; margin-top: 1px; }
 .bounds-pill { display: flex; gap: 10px; margin-top: 10px; font-size: 0.75rem; background: rgba(0, 0, 0, 0.5); padding: 5px 12px; border-radius: 12px; width: fit-content; color: #fff; }
 
-.visual-wrapper { position: relative; width: 90px; height: 90px; }
+.visual-wrapper { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
 .atmosphere-corona { position: absolute; width: 84px; height: 84px; background: rgba(250, 146, 60, 0.15); border-radius: 50%; right: -8px; top: -8px; animation: pulseCoronaCycle 3s linear infinite; }
 @keyframes pulseCoronaCycle { 0%,100% { transform: scale(0.93); opacity:0.3; } 50% { transform: scale(1.07); opacity:0.9; } }
 
@@ -487,15 +510,19 @@ body[data-theme="light"] .location-capsule-bar { background: #ffffff; }
 
 /* --- Fixed Navigation Dock Architecture --- */
 .bottom-navigation-dock-panel {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 68px;
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    height: calc(68px + env(safe-area-inset-bottom));
     background: var(--panel-sheet); border-top: 1px solid var(--glass-edge);
-    display: flex; justify-content: space-around; align-items: center;
-    padding-bottom: env(safe-area-inset-bottom); z-index: 100;
+    display: flex; justify-content: space-around; align-items: flex-start;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
+    z-index: 100;
 }
 .dock-link {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     color: var(--sub-muted-text); text-decoration: none; font-size: 0.68rem; gap: 4px;
-    width: 68px; height: 100%; position: relative;
+    flex: 1 1 0; max-width: 90px; min-width: 44px; height: 68px; position: relative;
 }
 .dock-link i { width: 18px; height: 18px; transition: transform 0.3s var(--spring-easing), color 0.2s linear; }
 .dock-link.active { color: var(--main-light-text); }
@@ -549,7 +576,9 @@ body[data-theme="light"] .location-capsule-bar { background: #ffffff; }
 .location-capsule-bar:focus-visible, .geo-action-btn:focus-visible,
 .icon-btn:focus-visible, .segment-btn:focus-visible, .unit-toggle-row:focus-visible,
 .theme-pill-option:focus-visible, .setting-row-item:focus-visible,
-.search-input-field:focus-visible {
+.search-input-field:focus-visible, .dock-link:focus-visible, .drawer-item:focus-visible,
+.geo-locate-row:focus-visible, .location-option-row:focus-visible,
+.modal-open-trigger:focus-visible {
     outline: 2px solid var(--blue-neon);
     outline-offset: 2px;
 }
@@ -607,7 +636,7 @@ body[data-theme="light"] .search-input-shell { background: #fff; }
     font-size: 0.72rem; color: #f87171; margin: 2px 2px 12px 2px;
 }
 .geo-locate-row {
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 10px; min-height: 44px;
     border-radius: 14px; padding: 12px 14px; margin-bottom: 18px;
     position: relative; overflow: hidden;
 }
@@ -632,3 +661,45 @@ body[data-theme="light"] .search-input-shell { background: #fff; }
 
 /* Track zone container needs to sit above the SVG for hover mapping */
 .track-zone-container { position: absolute; inset: 0; }
+
+/* =================================================== */
+/* RESPONSIVE / TABLET / DESKTOP REFINEMENTS            */
+/* =================================================== */
+
+/* Belt-and-braces: nothing in the deck is allowed to force horizontal
+   scroll, even if a future content string is longer than expected. */
+.page-deck, .scroll-deck, .app-header, .brand, .glass-weather-card,
+.forecast-wrap-card, .premium-insight-hero-card, .best-time-analytics-card,
+.ai-recommendation-capsule-card, .settings-location-box {
+    max-width: 100%;
+}
+.brand h1, .hero-main-content h2, .cond-summary, .day-title {
+    overflow-wrap: break-word;
+}
+
+/* Theme pill labels are the smallest interactive targets in Settings;
+   guarantee 44px hit height without changing the visible pill size. */
+.theme-pill-option { min-height: 44px; justify-content: center; }
+
+/* Small phones (≤360px, e.g. Galaxy S8/S20 class devices, iPhone SE) */
+@media (max-width: 360px) {
+    .scroll-deck { padding: 4px 12px 84px 12px; gap: 12px; }
+    .dashboard-grid, .expect-quad-grid { gap: 4px; }
+}
+
+/* Tablets and up: keep the same phone-optimized composition (per the
+   "don't redesign" brief) but let it breathe a little more centrally. */
+@media (min-width: 700px) {
+    body { padding: 24px 0; }
+}
+
+/* Respect the OS-level reduced-motion preference for users sensitive to
+   motion, without removing the animations for everyone else. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
