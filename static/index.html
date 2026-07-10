@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CanPredict AI - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -24,15 +24,15 @@
         <div class="viewport">
 
             <!-- Global loading overlay -->
-            <div class="loading-overlay">
+            <div class="loading-overlay" role="status" aria-live="polite" aria-hidden="true">
                 <div class="loading-spinner"></div>
             </div>
 
             <!-- Global City Search Modal -->
-            <div id="location-modal" class="modal-overlay">
+            <div id="location-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="location-modal-title" aria-hidden="true">
                 <div class="modal-card">
                     <div class="modal-header">
-                        <h3>Search Location</h3>
+                        <h3 id="location-modal-title">Search Location</h3>
                         <button class="icon-btn close-modal-btn" id="modal-close-trigger" aria-label="Close"><i data-lucide="x"></i></button>
                     </div>
 
@@ -62,17 +62,17 @@
             </div>
 
             <!-- Application Navigation Sidebar Drawer -->
-            <div id="app-drawer" class="drawer-overlay">
+            <div id="app-drawer" class="drawer-overlay" role="dialog" aria-modal="true" aria-labelledby="app-drawer-title" aria-hidden="true">
                 <div class="drawer-panel">
                     <div class="drawer-header">
                         <div class="drawer-brand">
-                            <h2>CanPredict <span class="ai-glow">AI</span></h2>
+                            <h2 id="app-drawer-title">CanPredict <span class="ai-glow">AI</span></h2>
                             <p>Personal Assistant Engine</p>
                         </div>
                         <button class="icon-btn close-drawer-btn" id="drawer-close-trigger" aria-label="Close menu"><i data-lucide="x"></i></button>
                     </div>
                     <div class="drawer-menu-list">
-                        <a href="index.html" class="drawer-item active"><i data-lucide="home"></i> <span>Dashboard Home</span></a>
+                        <a href="index.html" class="drawer-item active" aria-current="page"><i data-lucide="home"></i> <span>Dashboard Home</span></a>
                         <a href="forecast.html" class="drawer-item"><i data-lucide="calendar"></i> <span>7-Day Forecast</span></a>
                         <a href="insights.html" class="drawer-item"><i data-lucide="sparkles"></i> <span>Predictive Analytics</span></a>
                         <a href="profile.html" class="drawer-item"><i data-lucide="settings"></i> <span>User Settings</span></a>
@@ -178,8 +178,8 @@
             </div>
 
             <!-- Fixed Bottom Persistent Navigation Interface Bar -->
-            <nav class="bottom-navigation-dock-panel">
-                <a href="index.html" class="dock-link active"><i data-lucide="home"></i><span>Home</span></a>
+            <nav class="bottom-navigation-dock-panel" aria-label="Primary">
+                <a href="index.html" class="dock-link active" aria-current="page"><i data-lucide="home"></i><span>Home</span></a>
                 <a href="forecast.html" class="dock-link"><i data-lucide="calendar"></i><span>Forecast</span></a>
                 <a href="insights.html" class="dock-link"><i data-lucide="sparkles"></i><span>Insights</span></a>
                 <a href="profile.html" class="dock-link"><i data-lucide="settings"></i><span>Settings</span></a>
