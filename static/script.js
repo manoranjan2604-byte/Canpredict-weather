@@ -473,7 +473,10 @@
      * ================================================================ */
     function setLoading(isLoading) {
         AppState.loading = isLoading;
-        DOM.qsa('.loading-overlay').forEach((el) => el.classList.toggle('is-active', isLoading));
+        DOM.qsa('.loading-overlay').forEach((el) => {
+            el.classList.toggle('is-active', isLoading);
+            el.setAttribute('aria-hidden', isLoading ? 'false' : 'true');
+        });
         const syncText = DOM.byId('sync-text');
         if (syncText && isLoading) syncText.textContent = 'Syncing…';
         const spinIcon = DOM.qs('#sync-trigger .spin-icon');
@@ -589,17 +592,35 @@
 
         if (!modal) return;
 
+        let lastFocusedTrigger = null;
+
+        function openModal(trigger) {
+            lastFocusedTrigger = trigger || document.activeElement;
+            modal.classList.add('modal-open');
+            modal.setAttribute('aria-hidden', 'false');
+            renderRecentSearches();
+            if (input) setTimeout(() => input.focus(), 300);
+        }
+
+        function closeModal() {
+            modal.classList.remove('modal-open');
+            modal.setAttribute('aria-hidden', 'true');
+            if (lastFocusedTrigger && typeof lastFocusedTrigger.focus === 'function') {
+                lastFocusedTrigger.focus();
+            }
+        }
+
         DOM.qsa('.modal-open-trigger').forEach((trigger) => {
-            trigger.addEventListener('click', () => {
-                modal.classList.add('modal-open');
-                renderRecentSearches();
-                if (input) setTimeout(() => input.focus(), 300);
-            });
+            trigger.addEventListener('click', () => openModal(trigger));
         });
 
         if (closeBtn) {
-            closeBtn.addEventListener('click', () => modal.classList.remove('modal-open'));
+            closeBtn.addEventListener('click', closeModal);
         }
+
+        modal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
 
         function clearSearchError() {
             if (errorEl) { errorEl.textContent = ''; DOM.hide(errorEl); }
@@ -625,7 +646,7 @@
             input.disabled = true;
             try {
                 await loadWeather({ city: raw });
-                modal.classList.remove('modal-open');
+                closeModal();
                 input.value = '';
             } catch (err) {
                 showSearchError(messageForError(err));
@@ -659,7 +680,7 @@
                     async (pos) => {
                         try {
                             await loadWeather({ lat: pos.coords.latitude.toFixed(4), lon: pos.coords.longitude.toFixed(4) });
-                            modal.classList.remove('modal-open');
+                            closeModal();
                         } catch (err) {
                             showSearchError(messageForError(err));
                         } finally {
@@ -682,7 +703,7 @@
                 const row = e.target.closest('[data-recent-city]');
                 if (!row) return;
                 const city = row.getAttribute('data-recent-city');
-                loadWeather({ city }).then(() => modal.classList.remove('modal-open')).catch(() => {});
+                loadWeather({ city }).then(() => closeModal()).catch(() => {});
             });
         }
     }
@@ -696,17 +717,30 @@
         const closeTrigger = DOM.byId('drawer-close-trigger');
         if (!appDrawer) return;
 
+        function openDrawer() {
+            appDrawer.classList.add('drawer-open');
+            appDrawer.setAttribute('aria-hidden', 'false');
+        }
+        function closeDrawer() {
+            appDrawer.classList.remove('drawer-open');
+            appDrawer.setAttribute('aria-hidden', 'true');
+            if (openTrigger) openTrigger.focus();
+        }
+
         if (openTrigger) {
             openTrigger.addEventListener('click', (e) => {
                 e.stopPropagation();
-                appDrawer.classList.add('drawer-open');
+                openDrawer();
             });
         }
         if (closeTrigger) {
-            closeTrigger.addEventListener('click', () => appDrawer.classList.remove('drawer-open'));
+            closeTrigger.addEventListener('click', closeDrawer);
         }
         DOM.qsa('.drawer-item', appDrawer).forEach((item) => {
             item.addEventListener('click', () => appDrawer.classList.remove('drawer-open'));
+        });
+        appDrawer.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDrawer();
         });
     }
 
@@ -718,8 +752,12 @@
         if (segments.length === 0) return;
         segments.forEach((btn) => {
             btn.addEventListener('click', function handleSegmentClick() {
-                segments.forEach((b) => b.classList.remove('active'));
+                segments.forEach((b) => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
                 this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
                 const isDaily = this.getAttribute('data-forecast') === 'daily';
                 const dailyPanel = DOM.byId('daily-forecast-panel');
                 const hourlyPanel = DOM.byId('hourly-forecast-panel');
