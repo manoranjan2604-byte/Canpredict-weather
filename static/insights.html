@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CanPredict AI - Insights</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-theme="amoled" data-units="metric">
+
+    <div class="device-shell">
+        <div class="viewport">
+
+            <!-- Global loading overlay -->
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Global City Search Modal (shared markup/behavior with index.html) -->
+            <div id="location-modal" class="modal-overlay">
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <h3>Search Location</h3>
+                        <button class="icon-btn close-modal-btn" id="modal-close-trigger" aria-label="Close"><i data-lucide="x"></i></button>
+                    </div>
+
+                    <div class="search-input-row">
+                        <div class="search-input-shell">
+                            <i data-lucide="search" class="search-input-icon"></i>
+                            <input type="text" id="city-search-input" class="search-input-field"
+                                   placeholder="Search any city worldwide…" autocomplete="off"
+                                   aria-label="Search for a city">
+                        </div>
+                        <button class="icon-btn ripple-target" id="city-search-submit" aria-label="Search">
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+                    <p id="search-error-text" class="search-error-text is-hidden" role="alert"></p>
+
+                    <button class="geo-locate-row ripple-target" id="geo-locate-trigger">
+                        <i data-lucide="locate-fixed" class="blue-tint"></i>
+                        <span>Use my current location</span>
+                    </button>
+
+                    <h4 class="search-section-label">Recent Searches</h4>
+                    <div class="modal-body-list" id="recent-searches-list">
+                        <p class="empty-state-text">Your recent searches will appear here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW DECK 3: PREMIUM NEURAL INTELLIGENCE INSIGHTS -->
+            <div id="insights-view" class="page-deck active">
+                <header class="app-header insights-custom-header">
+                    <a class="icon-btn route-home-btn" aria-label="Back" href="index.html"><i data-lucide="chevron-left"></i></a>
+                    <div class="brand center-brand">
+                        <h1>AI Insights</h1>
+                        <p class="subtitle">Smart insights for better decisions</p>
+                    </div>
+                    <div class="ai-avatar-shell-glowing animate-hover-pulse">
+                        <div class="ai-avatar-face">🤖</div>
+                    </div>
+                </header>
+
+                <div class="scroll-deck">
+                    <button class="location-capsule-bar modal-open-trigger ripple-target insights-interactive-trigger">
+                        <i data-lucide="map-pin" class="loc-pin"></i>
+                        <span class="global-loc-display">Loading…</span>
+                    </button>
+
+                    <!-- Today's Premium Insight Backdrop Hero Card -->
+                    <div class="premium-insight-hero-card entry-animate insights-hover-card">
+                        <div class="hero-top-tag"><i data-lucide="sparkles"></i> <span>Today's Insight</span></div>
+                        <div class="hero-main-content">
+                            <h2 id="insight-title-text">Loading…</h2>
+                            <p id="insight-desc-text">Fetching the latest AI-generated weather insight…</p>
+                        </div>
+                    </div>
+
+                    <!-- What to Expect Metrics Strip Grid Layout -->
+                    <section class="expect-grid-section entry-animate" style="animation-delay: 0.05s;">
+                        <div class="section-lead-title"><i data-lucide="bar-chart-2"></i> <span>What to Expect Today</span></div>
+                        <div class="expect-quad-grid">
+                            <div class="expect-cell animated-metric-box">
+                                <i data-lucide="cloud-rain" class="blue-tint"></i>
+                                <span class="expect-lbl">Rain Chance</span>
+                                <h3 id="expect-rain-val">--</h3>
+                                <span class="expect-status green-text" id="expect-rain-lbl">--</span>
+                            </div>
+                            <div class="expect-cell animated-metric-box">
+                                <i data-lucide="thermometer" class="orange-tint"></i>
+                                <span class="expect-lbl">Max Temp</span>
+                                <h3><span id="expect-max-val">--</span>°</h3>
+                                <span class="expect-status orange-text" id="expect-max-lbl">Today</span>
+                            </div>
+                            <div class="expect-cell animated-metric-box">
+                                <i data-lucide="thermometer-snowflake" class="cyan-tint"></i>
+                                <span class="expect-lbl">Min Temp</span>
+                                <h3><span id="expect-min-val">--</span>°</h3>
+                                <span class="expect-status green-text" id="expect-min-lbl">Today</span>
+                            </div>
+                            <div class="expect-cell animated-metric-box">
+                                <i data-lucide="wind" class="purple-tint"></i>
+                                <span class="expect-lbl">Wind Speed</span>
+                                <h3 id="expect-wind-val">--</h3>
+                                <span class="expect-status green-text" id="expect-wind-lbl">--</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Best Time to Go Out Chart Panel Section -->
+                    <section class="best-time-section entry-animate" style="animation-delay: 0.1s;">
+                        <div class="section-lead-title"><i data-lucide="clock"></i> <span>Best Time to Go Out</span></div>
+                        <div class="best-time-analytics-card premium-interactive-graph-card">
+                            <div class="best-time-left">
+                                <h2 id="best-time-range">--</h2>
+                                <p id="best-time-desc">Loading recommendation…</p>
+                            </div>
+                            <div class="best-time-right-graph">
+                                <div class="graph-container-relative">
+                                    <svg class="curve-timeline-svg" viewBox="0 0 160 80" id="interactive-timeline-svg">
+                                        <path id="timeline-curve-path" d="M 10,50 Q 45,45 80,40 T 150,45" fill="none" stroke="#a855f7" stroke-width="3" stroke-linecap="round"/>
+                                        <circle id="interactive-glow-dot" cx="80" cy="40" r="5" fill="#ffffff" class="glow-node-dot"/>
+                                    </svg>
+                                    <!-- Populated dynamically from insights.time_zones -->
+                                    <div class="track-zone-container" id="track-zone-container"></div>
+                                </div>
+                                <div class="curve-timeline-labels">
+                                    <span>6 AM</span><span>12 PM</span><span>9 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Specialized Bottom AI Recommendation Capsule Card -->
+                    <div class="ai-recommendation-capsule-card entry-animate insights-hover-card" style="animation-delay: 0.15s;">
+                        <div class="rec-left-meta">
+                            <div class="rec-title-row"><i data-lucide="sparkles"></i> <span>AI Recommendation</span></div>
+                            <p id="rec-body-text">Loading recommendation…</p>
+                        </div>
+                        <div class="rec-right-vector-art">
+                            <div class="ambient-rain-backdrop animate-pulse-slow"></div>
+                            <i data-lucide="umbrella" class="umbrella-glowing-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Bottom Persistent Navigation Interface Bar -->
+            <nav class="bottom-navigation-dock-panel">
+                <a href="index.html" class="dock-link"><i data-lucide="home"></i><span>Home</span></a>
+                <a href="forecast.html" class="dock-link"><i data-lucide="calendar"></i><span>Forecast</span></a>
+                <a href="insights.html" class="dock-link active"><i data-lucide="sparkles"></i><span>Insights</span></a>
+                <a href="profile.html" class="dock-link"><i data-lucide="settings"></i><span>Settings</span></a>
+            </nav>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

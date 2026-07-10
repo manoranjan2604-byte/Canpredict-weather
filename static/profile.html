@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CanPredict AI - Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-theme="amoled" data-units="metric">
+
+    <div class="device-shell">
+        <div class="viewport">
+
+            <!-- Global loading overlay -->
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Global City Search Modal (shared markup/behavior with index.html) -->
+            <div id="location-modal" class="modal-overlay">
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <h3>Search Location</h3>
+                        <button class="icon-btn close-modal-btn" id="modal-close-trigger" aria-label="Close"><i data-lucide="x"></i></button>
+                    </div>
+
+                    <div class="search-input-row">
+                        <div class="search-input-shell">
+                            <i data-lucide="search" class="search-input-icon"></i>
+                            <input type="text" id="city-search-input" class="search-input-field"
+                                   placeholder="Search any city worldwide…" autocomplete="off"
+                                   aria-label="Search for a city">
+                        </div>
+                        <button class="icon-btn ripple-target" id="city-search-submit" aria-label="Search">
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+                    <p id="search-error-text" class="search-error-text is-hidden" role="alert"></p>
+
+                    <button class="geo-locate-row ripple-target" id="geo-locate-trigger">
+                        <i data-lucide="locate-fixed" class="blue-tint"></i>
+                        <span>Use my current location</span>
+                    </button>
+
+                    <h4 class="search-section-label">Recent Searches</h4>
+                    <div class="modal-body-list" id="recent-searches-list">
+                        <p class="empty-state-text">Your recent searches will appear here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW DECK 4: INTERFACE SETTINGS -->
+            <div id="settings-view" class="page-deck active">
+                <header class="app-header">
+                    <a class="icon-btn route-home-btn" href="index.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+                    <div class="brand center-brand">
+                        <h1>Settings</h1>
+                        <p class="subtitle">Personalize Your Interface</p>
+                    </div>
+                    <div style="width:42px;"></div>
+                </header>
+                <div class="scroll-deck">
+                    <button class="settings-location-box entry-animate modal-open-trigger ripple-target">
+                        <div class="left-side-loc">
+                            <div class="loc-icon-shell"><i data-lucide="map-pin"></i></div>
+                            <div class="loc-details">
+                                <span>Primary Location</span>
+                                <h4 class="global-loc-display">Loading…</h4>
+                            </div>
+                        </div>
+                        <span class="change-loc-btn">Change <i data-lucide="chevron-right"></i></span>
+                    </button>
+
+                    <!-- Explicit Unit Configuration Interactive Module Panel -->
+                    <h3 class="settings-section-heading entry-animate">System Metric Units</h3>
+                    <div class="unit-configuration-panel entry-animate">
+                        <div class="unit-toggle-row ripple-target active" data-unit-toggle="metric" tabindex="0" role="button">
+                            <div class="unit-icon-box"><i data-lucide="sliders"></i></div>
+                            <div class="unit-meta-labels">
+                                <strong>Metric Notation System</strong>
+                                <small>Celsius (°C) &amp; Kilometers per hour (km/h)</small>
+                            </div>
+                            <div class="unit-indicator-radio"></div>
+                        </div>
+                        <div class="unit-toggle-row ripple-target" data-unit-toggle="imperial" tabindex="0" role="button">
+                            <div class="unit-icon-box"><i data-lucide="globe"></i></div>
+                            <div class="unit-meta-labels">
+                                <strong>Imperial Notation System</strong>
+                                <small>Fahrenheit (°F) &amp; Miles per hour (mph)</small>
+                            </div>
+                            <div class="unit-indicator-radio"></div>
+                        </div>
+                    </div>
+
+                    <h3 class="settings-section-heading entry-animate">Dynamic Palette Engine</h3>
+                    <div class="theme-selector-matrix entry-animate">
+                        <button class="theme-pill-option active" data-theme-set="amoled">
+                            <div class="pill-dot amoled-dot"></div>
+                            <span>AMOLED Black</span>
+                        </button>
+                        <button class="theme-pill-option" data-theme-set="dark">
+                            <div class="pill-dot dark-dot"></div>
+                            <span>Material Dark</span>
+                        </button>
+                        <button class="theme-pill-option" data-theme-set="light">
+                            <div class="pill-dot light-dot"></div>
+                            <span>Vibrant Light</span>
+                        </button>
+                    </div>
+
+                    <div class="settings-list-card entry-animate" style="animation-delay: 0.1s;">
+                        <div class="setting-row-item ripple-target" tabindex="0" role="button">
+                            <div class="row-left-item"><i data-lucide="bell" class="blue-tint"></i> <span>Push Alerts</span></div>
+                            <i data-lucide="chevron-right" class="chevron-arrow"></i>
+                        </div>
+                        <div class="setting-row-item ripple-target" tabindex="0" role="button">
+                            <div class="row-left-item"><i data-lucide="shield-alert" class="purple-tint"></i> <span>System Diagnostics</span></div>
+                            <i data-lucide="chevron-right" class="chevron-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Bottom Persistent Navigation Interface Bar -->
+            <nav class="bottom-navigation-dock-panel">
+                <a href="index.html" class="dock-link"><i data-lucide="home"></i><span>Home</span></a>
+                <a href="forecast.html" class="dock-link"><i data-lucide="calendar"></i><span>Forecast</span></a>
+                <a href="insights.html" class="dock-link"><i data-lucide="sparkles"></i><span>Insights</span></a>
+                <a href="profile.html" class="dock-link active"><i data-lucide="settings"></i><span>Settings</span></a>
+            </nav>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

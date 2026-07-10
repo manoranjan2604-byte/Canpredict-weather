@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CanPredict AI - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Apply saved theme/units before first paint to avoid a flash of default styling.
+        (function () {
+            try {
+                var theme = JSON.parse(localStorage.getItem('cp_theme') || '"amoled"');
+                var units = JSON.parse(localStorage.getItem('cp_units') || '"metric"');
+                document.documentElement.dataset.preTheme = theme;
+                document.documentElement.dataset.preUnits = units;
+            } catch (e) { /* ignore, defaults will apply */ }
+        })();
+    </script>
+</head>
+<body data-theme="amoled" data-units="metric">
+
+    <div class="device-shell">
+        <div class="viewport">
+
+            <!-- Global loading overlay -->
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Global City Search Modal -->
+            <div id="location-modal" class="modal-overlay">
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <h3>Search Location</h3>
+                        <button class="icon-btn close-modal-btn" id="modal-close-trigger" aria-label="Close"><i data-lucide="x"></i></button>
+                    </div>
+
+                    <div class="search-input-row">
+                        <div class="search-input-shell">
+                            <i data-lucide="search" class="search-input-icon"></i>
+                            <input type="text" id="city-search-input" class="search-input-field"
+                                   placeholder="Search any city worldwide…" autocomplete="off"
+                                   aria-label="Search for a city">
+                        </div>
+                        <button class="icon-btn ripple-target" id="city-search-submit" aria-label="Search">
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+                    <p id="search-error-text" class="search-error-text is-hidden" role="alert"></p>
+
+                    <button class="geo-locate-row ripple-target" id="geo-locate-trigger">
+                        <i data-lucide="locate-fixed" class="blue-tint"></i>
+                        <span>Use my current location</span>
+                    </button>
+
+                    <h4 class="search-section-label">Recent Searches</h4>
+                    <div class="modal-body-list" id="recent-searches-list">
+                        <p class="empty-state-text">Your recent searches will appear here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Navigation Sidebar Drawer -->
+            <div id="app-drawer" class="drawer-overlay">
+                <div class="drawer-panel">
+                    <div class="drawer-header">
+                        <div class="drawer-brand">
+                            <h2>CanPredict <span class="ai-glow">AI</span></h2>
+                            <p>Personal Assistant Engine</p>
+                        </div>
+                        <button class="icon-btn close-drawer-btn" id="drawer-close-trigger" aria-label="Close menu"><i data-lucide="x"></i></button>
+                    </div>
+                    <div class="drawer-menu-list">
+                        <a href="index.html" class="drawer-item active"><i data-lucide="home"></i> <span>Dashboard Home</span></a>
+                        <a href="forecast.html" class="drawer-item"><i data-lucide="calendar"></i> <span>7-Day Forecast</span></a>
+                        <a href="insights.html" class="drawer-item"><i data-lucide="sparkles"></i> <span>Predictive Analytics</span></a>
+                        <a href="profile.html" class="drawer-item"><i data-lucide="settings"></i> <span>User Settings</span></a>
+                    </div>
+                    <div class="drawer-footer">
+                        <p>App Version 3.0.0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW DECK 1: DASHBOARD HOME -->
+            <div id="home-view" class="page-deck active">
+                <header class="app-header">
+                    <button class="icon-btn ripple-target" id="drawer-open-trigger" aria-label="Open menu"><i data-lucide="menu"></i></button>
+                    <div class="brand">
+                        <h1>CanPredict <span class="ai-glow">AI</span></h1>
+                        <p class="subtitle">AI Weather Companion</p>
+                    </div>
+                    <button class="icon-btn notification-btn ripple-target" aria-label="Notifications">
+                        <i data-lucide="bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                </header>
+
+                <div class="scroll-deck">
+                    <section class="location-bar">
+                        <button class="location-trigger ripple-target modal-open-trigger" aria-label="Change location">
+                            <i data-lucide="map-pin" class="pin-icon dynamic-bounce"></i>
+                            <span class="location-text global-loc-display">Loading…</span>
+                            <i data-lucide="chevron-down" class="chevron-arrow"></i>
+                        </button>
+                        <button class="geo-action-btn ripple-target modal-open-trigger" aria-label="Search location"><i data-lucide="search"></i></button>
+                    </section>
+
+                    <main class="glass-weather-card main-hero-card entry-animate">
+                        <div class="card-meta">
+                            <span class="current-date" id="hero-date"></span>
+                            <div class="sync-badge ripple-target" id="sync-trigger"><i data-lucide="refresh-cw" class="spin-icon"></i> <span id="sync-text">Updated Just Now</span></div>
+                        </div>
+
+                        <div class="weather-hero-block">
+                            <div class="weather-metrics">
+                                <h2 class="main-temperature float-text"><span id="hero-temp">--</span>°</h2>
+                                <p class="weather-condition" id="hero-condition">--</p>
+                                <p class="feels-like-text">Feels like <span id="hero-feels">--</span>°</p>
+
+                                <div class="bounds-pill">
+                                    <span class="bound-high"><i data-lucide="arrow-up"></i> <span id="hero-max">--</span>° <small>Max</small></span>
+                                    <span class="bound-low"><i data-lucide="arrow-down"></i> <span id="hero-min">--</span>° <small>Min</small></span>
+                                </div>
+                            </div>
+
+                            <div class="visual-wrapper">
+                                <div class="atmosphere-corona"></div>
+                                <i id="hero-condition-icon" data-lucide="cloud" class="hero-condition-icon orange-tint"></i>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-grid">
+                            <div class="grid-cell">
+                                <i data-lucide="droplets" class="cell-icon blue-tint"></i>
+                                <span class="cell-lbl">Humidity</span>
+                                <span class="cell-val" id="val-humidity">--</span>
+                            </div>
+                            <div class="grid-cell">
+                                <i data-lucide="wind" class="cell-icon cyan-tint"></i>
+                                <span class="cell-lbl">Wind</span>
+                                <span class="cell-val" id="val-wind">--</span>
+                            </div>
+                            <div class="grid-cell">
+                                <i data-lucide="sun" class="cell-icon orange-tint"></i>
+                                <span class="cell-lbl">UV Index</span>
+                                <span class="cell-val orange-text" id="val-uv">--</span>
+                            </div>
+                            <div class="grid-cell">
+                                <i data-lucide="leaf" class="cell-icon green-tint"></i>
+                                <span class="cell-lbl">Air Quality</span>
+                                <span class="cell-val green-text" id="val-aqi">--</span>
+                            </div>
+                        </div>
+                    </main>
+
+                    <section class="hourly-strip-section entry-animate" style="animation-delay: 0.1s;">
+                        <div class="strip-header">
+                            <h3>Next 6 Hours</h3>
+                            <a href="forecast.html" class="view-all-link ripple-target" id="link-to-forecast">View More <i data-lucide="chevron-right"></i></a>
+                        </div>
+
+                        <div class="horizontal-scroll-row" id="hourly-strip-row">
+                            <p class="empty-state-text">Loading hourly forecast…</p>
+                        </div>
+                    </section>
+
+                    <a href="insights.html" class="ai-hub-capsule ripple-target entry-animate" id="link-to-insights" style="animation-delay: 0.15s;">
+                        <div class="ai-avatar-glow active-ai-pulse">🤖</div>
+                        <div class="ai-summary-text">
+                            <h4>AI Weather Insight</h4>
+                            <p id="ai-dynamic-summary">Loading AI insight…</p>
+                        </div>
+                        <div class="ai-arrow-trigger"><i data-lucide="chevron-right"></i></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Fixed Bottom Persistent Navigation Interface Bar -->
+            <nav class="bottom-navigation-dock-panel">
+                <a href="index.html" class="dock-link active"><i data-lucide="home"></i><span>Home</span></a>
+                <a href="forecast.html" class="dock-link"><i data-lucide="calendar"></i><span>Forecast</span></a>
+                <a href="insights.html" class="dock-link"><i data-lucide="sparkles"></i><span>Insights</span></a>
+                <a href="profile.html" class="dock-link"><i data-lucide="settings"></i><span>Settings</span></a>
+            </nav>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Populate the human-readable date on the home hero card.
+        document.addEventListener('DOMContentLoaded', function () {
+            var el = document.getElementById('hero-date');
+            if (el) {
+                el.textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+            }
+        });
+    </script>
+</body>
+</html>

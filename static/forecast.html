@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CanPredict AI - Forecast</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body data-theme="amoled" data-units="metric">
+
+    <div class="device-shell">
+        <div class="viewport">
+
+            <!-- Global loading overlay -->
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Global City Search Modal (shared markup/behavior with index.html) -->
+            <div id="location-modal" class="modal-overlay">
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <h3>Search Location</h3>
+                        <button class="icon-btn close-modal-btn" id="modal-close-trigger" aria-label="Close"><i data-lucide="x"></i></button>
+                    </div>
+
+                    <div class="search-input-row">
+                        <div class="search-input-shell">
+                            <i data-lucide="search" class="search-input-icon"></i>
+                            <input type="text" id="city-search-input" class="search-input-field"
+                                   placeholder="Search any city worldwide…" autocomplete="off"
+                                   aria-label="Search for a city">
+                        </div>
+                        <button class="icon-btn ripple-target" id="city-search-submit" aria-label="Search">
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+                    <p id="search-error-text" class="search-error-text is-hidden" role="alert"></p>
+
+                    <button class="geo-locate-row ripple-target" id="geo-locate-trigger">
+                        <i data-lucide="locate-fixed" class="blue-tint"></i>
+                        <span>Use my current location</span>
+                    </button>
+
+                    <h4 class="search-section-label">Recent Searches</h4>
+                    <div class="modal-body-list" id="recent-searches-list">
+                        <p class="empty-state-text">Your recent searches will appear here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW DECK 2: FORECAST MODELS -->
+            <div id="forecast-view" class="page-deck active">
+                <header class="app-header">
+                    <a class="icon-btn route-home-btn" href="index.html" aria-label="Back"><i data-lucide="arrow-left"></i></a>
+                    <div class="brand center-brand">
+                        <h1>Forecast Engine</h1>
+                        <p class="subtitle global-loc-display">Loading…</p>
+                    </div>
+                    <button class="icon-btn ripple-target modal-open-trigger" aria-label="Search location"><i data-lucide="search"></i></button>
+                </header>
+
+                <div class="scroll-deck">
+                    <div class="segmented-control">
+                        <button class="segment-btn active" data-forecast="daily"><i data-lucide="calendar"></i> 7 Days</button>
+                        <button class="segment-btn" data-forecast="hourly"><i data-lucide="clock"></i> 12 Hours</button>
+                    </div>
+
+                    <section id="daily-forecast-panel" class="forecast-wrap-card sub-panel active-panel entry-animate">
+                        <h3 class="panel-title">7-Day Extended Macro Timeline</h3>
+                        <div class="forecast-list" id="daily-forecast-list">
+                            <p class="empty-state-text">Loading forecast…</p>
+                        </div>
+                    </section>
+
+                    <section id="hourly-forecast-panel" class="sub-panel entry-animate">
+                        <div class="hourly-complex-grid" id="hourly-forecast-grid">
+                            <p class="empty-state-text">Loading hourly forecast…</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Fixed Bottom Persistent Navigation Interface Bar -->
+            <nav class="bottom-navigation-dock-panel">
+                <a href="index.html" class="dock-link"><i data-lucide="home"></i><span>Home</span></a>
+                <a href="forecast.html" class="dock-link active"><i data-lucide="calendar"></i><span>Forecast</span></a>
+                <a href="insights.html" class="dock-link"><i data-lucide="sparkles"></i><span>Insights</span></a>
+                <a href="profile.html" class="dock-link"><i data-lucide="settings"></i><span>Settings</span></a>
+            </nav>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
