@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CanPredict AI - Dashboard</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <link rel="icon" href="/icon-192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CanPredict AI">
+
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -80,6 +90,21 @@
                     <div class="drawer-footer">
                         <p>App Version 3.0.0</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- PWA Install Prompt -->
+            <div id="install-banner" class="install-banner" role="dialog" aria-labelledby="install-banner-title" aria-hidden="true">
+                <div class="install-banner-icon">
+                    <img src="/icon-192.png" alt="" width="44" height="44">
+                </div>
+                <div class="install-banner-copy">
+                    <h4 id="install-banner-title">Install CanPredict AI</h4>
+                    <p>Add it to your home screen for a faster, full-screen experience.</p>
+                </div>
+                <div class="install-banner-actions">
+                    <button class="icon-btn install-dismiss-btn" id="install-dismiss-btn" aria-label="Dismiss"><i data-lucide="x"></i></button>
+                    <button class="install-accept-btn ripple-target" id="install-accept-btn">Install</button>
                 </div>
             </div>
 
@@ -194,6 +219,77 @@
                 el.textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
             }
         });
+    </script>
+
+    <!-- PWA: service worker registration + install prompt popup -->
+    <script>
+        (function () {
+            'use strict';
+
+            // ---- Register service worker ----
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js').catch(function (err) {
+                        console.warn('Service worker registration failed:', err);
+                    });
+                });
+            }
+
+            // ---- Install prompt popup ----
+            var DISMISS_KEY = 'cp_install_dismissed';
+            var deferredPrompt = null;
+            var banner = document.getElementById('install-banner');
+            if (!banner) return;
+
+            function showBanner() {
+                if (localStorage.getItem(DISMISS_KEY)) return;
+                banner.classList.add('is-visible');
+                banner.setAttribute('aria-hidden', 'false');
+            }
+
+            function hideBanner() {
+                banner.classList.remove('is-visible');
+                banner.setAttribute('aria-hidden', 'true');
+            }
+
+            // Already installed / running standalone: never show.
+            var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                || window.navigator.standalone === true;
+
+            if (!isStandalone) {
+                window.addEventListener('beforeinstallprompt', function (event) {
+                    event.preventDefault();
+                    deferredPrompt = event;
+                    showBanner();
+                });
+
+                window.addEventListener('appinstalled', function () {
+                    hideBanner();
+                    deferredPrompt = null;
+                });
+            }
+
+            var acceptBtn = document.getElementById('install-accept-btn');
+            var dismissBtn = document.getElementById('install-dismiss-btn');
+
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', function () {
+                    hideBanner();
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.finally(function () {
+                        deferredPrompt = null;
+                    });
+                });
+            }
+
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', function () {
+                    hideBanner();
+                    localStorage.setItem(DISMISS_KEY, '1');
+                });
+            }
+        })();
     </script>
 </body>
 </html>
