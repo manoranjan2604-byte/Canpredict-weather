@@ -281,8 +281,13 @@
                     } else {
                         desc.textContent = 'Use your browser\'s menu (⋮ or Share) and choose "Install app" or "Add to Home Screen".';
                     }
+                    // No native prompt captured: the accept button can't trigger an
+                    // install, so relabel it to close the modal instead of being a
+                    // dead click target.
+                    acceptBtn.textContent = 'Got It';
                 } else {
                     desc.textContent = 'Add it to your home screen for a faster, full-screen experience with offline access.';
+                    acceptBtn.textContent = 'Install App';
                 }
 
                 modal.classList.add('is-visible');
@@ -324,8 +329,11 @@
                         promptRef.prompt();
                         promptRef.userChoice.finally(function () {});
                     } else {
-                        // No native prompt available: leave the modal open so the
-                        // manual instructions stay visible for the user to follow.
+                        // No native prompt available: the manual instructions are
+                        // already shown in the modal copy, so just acknowledge and
+                        // close it rather than leaving a click with no effect.
+                        hideModal();
+                        snooze();
                     }
                 });
             }
