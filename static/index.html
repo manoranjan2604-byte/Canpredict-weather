@@ -96,8 +96,9 @@
             <!-- PWA Install Prompt -->
             <div id="install-modal" class="install-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="install-banner-title" aria-hidden="true">
                 <div class="install-modal-card">
-                    <div class="install-banner-icon">
-                        <img src="/icon-192.png" alt="" width="56" height="56">
+                    <div class="install-banner-icon" id="install-banner-icon-wrap">
+                        <img src="/icon-192.png" alt="" width="56" height="56"
+                             onerror="this.remove(); document.getElementById('install-banner-icon-wrap').classList.add('icon-fallback');">
                     </div>
                     <div class="install-banner-copy">
                         <h4 id="install-banner-title">Install CanPredict AI</h4>
@@ -238,8 +239,10 @@
             }
 
             // ---- Install prompt popup ----
-            var DISMISS_KEY = 'cp_install_dismissed_until';
-            var SNOOZE_DAYS = 7; // re-offer install after this many days
+            // sessionStorage (not localStorage): "Continue in Browser" only
+            // silences the popup for the current tab/session, so it reappears
+            // on the next fresh visit instead of staying hidden for days.
+            var DISMISS_KEY = 'cp_install_dismissed_session';
             var deferredPrompt = null;
             var modal = document.getElementById('install-modal');
             if (!modal) return;
@@ -257,13 +260,11 @@
             var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
 
             function snoozed() {
-                var until = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10);
-                return Date.now() < until;
+                return sessionStorage.getItem(DISMISS_KEY) === '1';
             }
 
             function snooze() {
-                var until = Date.now() + SNOOZE_DAYS * 24 * 60 * 60 * 1000;
-                localStorage.setItem(DISMISS_KEY, String(until));
+                sessionStorage.setItem(DISMISS_KEY, '1');
             }
 
             function showModal() {
