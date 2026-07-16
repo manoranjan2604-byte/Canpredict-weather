@@ -105,7 +105,7 @@
                         <p id="install-banner-desc">Install CanPredict AI for a faster, full-screen experience — or keep using it right here in your browser.</p>
                     </div>
                     <div class="install-modal-actions">
-                        <button class="install-accept-btn ripple-target" id="install-accept-btn">Install app</button>
+                        <button class="install-accept-btn ripple-target" id="install-accept-btn">Install</button>
                         <button class="install-continue-btn ripple-target" id="install-continue-btn">Continue in Browser</button>
                     </div>
                 </div>
@@ -281,13 +281,13 @@
                     } else {
                         desc.textContent = 'Use your browser\'s menu (⋮ or Share) and choose "Install app" or "Add to Home Screen".';
                     }
-                    // No native prompt captured: the accept button can't trigger an
-                    // install, so relabel it to close the modal instead of being a
-                    // dead click target.
-                    acceptBtn.textContent = 'Got It';
+                    // No native prompt captured: the browser gives us no API to force
+                    // an install dialog here, so the button still reads "Install" but
+                    // its click just acknowledges the instructions above and closes.
+                    acceptBtn.textContent = 'Install';
                 } else {
                     desc.textContent = 'Add it to your home screen for a faster, full-screen experience with offline access.';
-                    acceptBtn.textContent = 'Install app';
+                    acceptBtn.textContent = 'Install';
                 }
 
                 modal.classList.add('is-visible');
