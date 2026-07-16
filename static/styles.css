@@ -204,6 +204,9 @@ body[data-theme="light"] .icon-btn { background: rgba(0,0,0,0.03); }
     padding: calc(16px + env(safe-area-inset-top)) 16px 10px 16px;
     min-height: 68px; z-index: 10;
 }
+.brand-with-logo { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.brand-logo-mark { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; }
+.brand-text-group { text-align: right; }
 .brand h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.4px; color: var(--main-light-text); }
 .brand.center-brand { text-align: left; flex: 1; margin-left: 14px; }
 .ai-glow { background: linear-gradient(90deg, #6366f1, #d946ef); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
