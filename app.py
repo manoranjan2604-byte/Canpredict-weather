@@ -1,4 +1,5 @@
 from __future__ import annotations
+from flask import send_from_directory
 
 import os
 
@@ -30,7 +31,30 @@ CORS(app, resources={r"/api/*": {"origins": _origins}})
 
 weather_cache = TTLCache(ttl_seconds=config.CACHE_TTL_SECONDS)
 
+@app.route("/manifest.json")
+def manifest():
+    return send_from_directory("public", "manifest.json", mimetype="application/manifest+json")
 
+
+@app.route("/sw.js")
+def service_worker():
+    return send_from_directory("public", "sw.js", mimetype="application/javascript")
+
+
+@app.route("/offline.html")
+def offline():
+    return send_from_directory("public", "offline.html")
+
+
+@app.route("/icon-192.png")
+def icon192():
+    return send_from_directory("public", "icon-192.png")
+
+
+@app.route("/icon-512.png")
+def icon512():
+    return send_from_directory("public", "icon-512.png")
+    
 @app.route("/")
 def serve_index():
     return send_from_directory(app.static_folder, "index.html")
