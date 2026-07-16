@@ -537,6 +537,12 @@ body[data-theme="light"] .location-capsule-bar { background: #ffffff; }
     background: var(--panel-sheet); border: 1px solid var(--glass-edge);
 }
 .install-banner-icon img { width: 100%; height: 100%; object-fit: cover; }
+.install-banner-icon.icon-fallback { display: flex; align-items: center; justify-content: center; }
+.install-banner-icon.icon-fallback::after {
+    content: "C"; font-size: 1.6rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--purple-glow), var(--blue-neon));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
 .install-banner-copy h4 { margin: 0 0 6px; font-size: 1.05rem; font-weight: 700; color: var(--main-light-text); }
 .install-banner-copy p { margin: 0; font-size: 0.82rem; color: var(--sub-muted-text); line-height: 1.4; }
 .install-modal-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 4px; }
