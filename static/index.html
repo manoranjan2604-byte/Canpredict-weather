@@ -94,17 +94,19 @@
             </div>
 
             <!-- PWA Install Prompt -->
-            <div id="install-banner" class="install-banner" role="dialog" aria-labelledby="install-banner-title" aria-hidden="true">
-                <div class="install-banner-icon">
-                    <img src="/icon-192.png" alt="" width="44" height="44">
-                </div>
-                <div class="install-banner-copy">
-                    <h4 id="install-banner-title">Install CanPredict AI</h4>
-                    <p>Add it to your home screen for a faster, full-screen experience.</p>
-                </div>
-                <div class="install-banner-actions">
-                    <button class="icon-btn install-dismiss-btn" id="install-dismiss-btn" aria-label="Dismiss"><i data-lucide="x"></i></button>
-                    <button class="install-accept-btn ripple-target" id="install-accept-btn">Install</button>
+            <div id="install-modal" class="install-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="install-banner-title" aria-hidden="true">
+                <div class="install-modal-card">
+                    <div class="install-banner-icon">
+                        <img src="/icon-192.png" alt="" width="56" height="56">
+                    </div>
+                    <div class="install-banner-copy">
+                        <h4 id="install-banner-title">Install CanPredict AI</h4>
+                        <p id="install-banner-desc">Add it to your home screen for a faster, full-screen experience with offline access.</p>
+                    </div>
+                    <div class="install-modal-actions">
+                        <button class="install-accept-btn ripple-target" id="install-accept-btn">Install App</button>
+                        <button class="install-continue-btn ripple-target" id="install-continue-btn">Continue in Browser</button>
+                    </div>
                 </div>
             </div>
 
@@ -236,57 +238,101 @@
             }
 
             // ---- Install prompt popup ----
-            var DISMISS_KEY = 'cp_install_dismissed';
+            var DISMISS_KEY = 'cp_install_dismissed_until';
+            var SNOOZE_DAYS = 7; // re-offer install after this many days
             var deferredPrompt = null;
-            var banner = document.getElementById('install-banner');
-            if (!banner) return;
+            var modal = document.getElementById('install-modal');
+            if (!modal) return;
 
-            function showBanner() {
-                if (localStorage.getItem(DISMISS_KEY)) return;
-                banner.classList.add('is-visible');
-                banner.setAttribute('aria-hidden', 'false');
-            }
-
-            function hideBanner() {
-                banner.classList.remove('is-visible');
-                banner.setAttribute('aria-hidden', 'true');
-            }
+            var desc = document.getElementById('install-banner-desc');
+            var acceptBtn = document.getElementById('install-accept-btn');
+            var continueBtn = document.getElementById('install-continue-btn');
 
             // Already installed / running standalone: never show.
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches
                 || window.navigator.standalone === true;
 
+            var ua = window.navigator.userAgent || '';
+            var isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
+            var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+
+            function snoozed() {
+                var until = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10);
+                return Date.now() < until;
+            }
+
+            function snooze() {
+                var until = Date.now() + SNOOZE_DAYS * 24 * 60 * 60 * 1000;
+                localStorage.setItem(DISMISS_KEY, String(until));
+            }
+
+            function showModal() {
+                if (isStandalone || snoozed()) return;
+
+                // Chrome/Edge/Android with a captured native prompt: offer one-tap install.
+                // Everyone else (iOS Safari, Firefox, or Chrome before the event fires):
+                // show manual "Add to Home Screen" instructions instead of a dead button.
+                if (!deferredPrompt) {
+                    if (isIOS && isSafari) {
+                        desc.textContent = 'Tap the Share icon, then "Add to Home Screen" to install CanPredict AI.';
+                    } else if (!('serviceWorker' in navigator)) {
+                        desc.textContent = 'Your browser doesn\'t support app installation. You can still use CanPredict AI in the browser.';
+                    } else {
+                        desc.textContent = 'Use your browser\'s menu (⋮ or Share) and choose "Install app" or "Add to Home Screen".';
+                    }
+                } else {
+                    desc.textContent = 'Add it to your home screen for a faster, full-screen experience with offline access.';
+                }
+
+                modal.classList.add('is-visible');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+
+            function hideModal() {
+                modal.classList.remove('is-visible');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+
             if (!isStandalone) {
                 window.addEventListener('beforeinstallprompt', function (event) {
                     event.preventDefault();
                     deferredPrompt = event;
-                    showBanner();
+                    // If the modal is already open with fallback copy, refresh it to the real install flow.
+                    if (modal.classList.contains('is-visible')) {
+                        desc.textContent = 'Add it to your home screen for a faster, full-screen experience with offline access.';
+                    }
                 });
 
                 window.addEventListener('appinstalled', function () {
-                    hideBanner();
+                    hideModal();
                     deferredPrompt = null;
                 });
-            }
 
-            var acceptBtn = document.getElementById('install-accept-btn');
-            var dismissBtn = document.getElementById('install-dismiss-btn');
+                // Show the popup shortly after load, regardless of whether the native
+                // beforeinstallprompt event has fired yet (it may arrive late, or never
+                // on browsers that don't support it — the fallback copy covers those).
+                window.setTimeout(showModal, 1200);
+            }
 
             if (acceptBtn) {
                 acceptBtn.addEventListener('click', function () {
-                    hideBanner();
-                    if (!deferredPrompt) return;
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.finally(function () {
+                    if (deferredPrompt) {
+                        var promptRef = deferredPrompt;
                         deferredPrompt = null;
-                    });
+                        hideModal();
+                        promptRef.prompt();
+                        promptRef.userChoice.finally(function () {});
+                    } else {
+                        // No native prompt available: leave the modal open so the
+                        // manual instructions stay visible for the user to follow.
+                    }
                 });
             }
 
-            if (dismissBtn) {
-                dismissBtn.addEventListener('click', function () {
-                    hideBanner();
-                    localStorage.setItem(DISMISS_KEY, '1');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', function () {
+                    hideModal();
+                    snooze();
                 });
             }
         })();
